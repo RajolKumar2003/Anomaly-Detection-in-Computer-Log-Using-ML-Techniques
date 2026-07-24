@@ -200,7 +200,8 @@ The complete methodology, exploratory analysis, hyperparameter search spaces, an
 
 **Rajol Kumar**
 M.Sc. in Mathematics and Scientific Computing, National Institute of Technology (NIT) Warangal
-Summer Research Internship, WSAI — IIT Madras
+
+Summer Research Internship, Wadhawani School of Data science & AI (WSAI) — IIT Madras
 
 *Under the guidance of [Dr. Sri Vallabha Deevi](https://www.linkedin.com/in/dsrivallabha/), Adjunct Faculty, Dept. of Data Science & AI, IIT Madras*
 
