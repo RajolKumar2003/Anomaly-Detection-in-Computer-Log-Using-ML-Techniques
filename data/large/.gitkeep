@@ -1,0 +1,3 @@
+!data/large/
+data/large/*
+!data/large/.gitkeep
