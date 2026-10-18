@@ -3,7 +3,13 @@
 venv/
 
 # Raw datasets
-data/
+data/*
+!data/small/
+!data/medium/
+data/small/*
+data/medium/*
+!data/small/.gitkeep
+!data/medium/.gitkeep
 
 # Python cache
 __pycache__/
