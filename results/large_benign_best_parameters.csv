@@ -1,0 +1,2 @@
+encoding_dim,hidden_dim,n_hidden_layers,learning_rate,dropout,l2,batch_size,target_fpr
+8,192,2,0.0005966464941062595,0.0817760418076908,1.3405491159668705e-07,2048,0.01237896223546739

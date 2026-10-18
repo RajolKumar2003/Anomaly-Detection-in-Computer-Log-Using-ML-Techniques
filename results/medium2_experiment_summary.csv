@@ -1,0 +1,5 @@
+Experiment,Configuration,Best Model,5% F1
+Exp 1,"All Features, No HPO",Autoencoder,0.28439425051334705
+Exp 2,"Selected Features, No HPO",Autoencoder,0.4877384196185286
+Exp 3,All Features + Optuna,Autoencoder,0.8396305625524769
+Exp 4,Selected Features + Optuna,Autoencoder,0.644674835061263

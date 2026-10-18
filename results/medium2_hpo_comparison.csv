@@ -1,0 +1,7 @@
+Configuration,Mean F1
+Autoencoder - All Features,0.5009975777524672
+Autoencoder - Selected Features,0.36004434053908785
+One-Class SVM - Selected Features,0.31137674062202364
+Isolation Forest - Selected Features,0.29195983631890615
+One-Class SVM - All Features,0.2511568280895336
+Isolation Forest - All Features,0.08190548710011981

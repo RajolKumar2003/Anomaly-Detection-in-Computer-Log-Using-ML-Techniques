@@ -1,0 +1,6 @@
+Model,Accuracy,Precision,Recall,F1-Score
+Autoencoder,0.755,0.1081,0.2,0.1404
+Isolation Forest,0.77,0.0938,0.15,0.1154
+Gaussian Mixture Model,0.76,0.0882,0.15,0.1111
+Hidden Markov Model,0.835,0.1176,0.1,0.1081
+Elliptic Envelope,0.75,0.0833,0.15,0.1071

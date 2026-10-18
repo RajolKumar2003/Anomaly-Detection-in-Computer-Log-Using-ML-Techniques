@@ -1,0 +1,17 @@
+numpy>=2.0
+pandas>=2.2
+scipy>=1.13
+matplotlib>=3.8
+
+scikit-learn>=1.5
+imbalanced-learn>=0.12
+xgboost>=3.0
+lightgbm>=4.0
+hmmlearn>=0.3.3
+
+tensorflow>=2.21
+optuna>=5.0
+
+jupyter>=1.1
+notebook>=7.0
+ipykernel>=6.29
