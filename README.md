@@ -16,28 +16,40 @@ The project is organized into three stages:
    - Supervised classification
    - Unsupervised anomaly detection
    - Class imbalance handling
-   - Feature selection
+   - Mutual Information feature selection
 
 2. **Medium-scale experiments**
-   - Supervised learning on UNSW-NB15
+   - Supervised classification on UNSW-NB15
    - Unsupervised anomaly detection on CSE-CIC-IDS2018
-   - Mutual Information and correlation-based feature selection
+   - Feature selection
    - Optuna hyperparameter optimization
 
 3. **Large-scale experiments**
    - Deep Autoencoder training on benign network traffic
-   - Threshold calibration using independent benign data
-   - Final evaluation at multiple anomaly rates
+   - Independent anomaly-threshold calibration
+   - Evaluation at multiple anomaly prevalence levels
    - Training contamination analysis
 
-The evaluation pipeline uses separate training, calibration, development, and final holdout data to provide reliable estimates of model performance.
+The evaluation pipeline separates model training, threshold calibration, model development, and final holdout evaluation to provide reliable estimates of model performance.
 
 ---
 
 ## Repository Structure
 
 ```text
-Computer-Log-Anomaly-Detection/
+Anomaly-Detection-in-Computer-Log-Using-ML-Techniques/
+│
+├── data/
+│   ├── small/
+│   │   └── embedded_system_network_security_dataset.csv
+│   │
+│   ├── medium/
+│   │   ├── UNSW_NB15_training-set.csv
+│   │   ├── UNSW_NB15_testing-set.csv
+│   │   └── 02-15-2018.csv
+│   │
+│   └── large/
+│       └── 02-15-2018.csv
 │
 ├── notebooks/
 │   ├── Small_Dataset.ipynb
@@ -54,10 +66,11 @@ Computer-Log-Anomaly-Detection/
 │
 ├── README.md
 ├── requirements.txt
-└── .gitignore
+├── .gitignore
+└── .gitattributes
 ```
 
-Raw datasets are excluded from the repository because of their size.
+Dataset files are stored in the `data/` directory. Large files are managed using **Git Large File Storage (Git LFS)**.
 
 ---
 
@@ -65,9 +78,9 @@ Raw datasets are excluded from the repository because of their size.
 
 ## 1. Small Dataset
 
-The first stage uses a labelled network traffic dataset containing approximately 1,000 observations.
+The first stage uses a labelled network traffic dataset containing approximately **1,000 observations**.
 
-The experiment compares supervised classification and unsupervised anomaly detection.
+The experiment compares supervised classification with unsupervised anomaly detection.
 
 ### Supervised Models
 
@@ -84,6 +97,8 @@ The experiment compares supervised classification and unsupervised anomaly detec
 - Hidden Markov Model
 - Elliptic Envelope
 - Autoencoder
+
+### Experimental Workflow
 
 The workflow includes:
 
@@ -114,15 +129,15 @@ The workflow includes:
 | Recall | 0.2000 |
 | F1-score | 0.1404 |
 
-The small-scale experiment highlights the difficulty of anomaly detection under strong class imbalance and motivates evaluation on larger intrusion-detection datasets.
+The experiment demonstrates the difficulty of anomaly detection under strong class imbalance and motivates evaluation on larger intrusion-detection datasets.
 
 ---
 
 # 2. UNSW-NB15 Supervised Classification
 
-UNSW-NB15 is used for supervised binary classification of normal and attack traffic.
+The second stage uses **UNSW-NB15** for supervised binary classification of normal and attack traffic.
 
-The official training and testing partitions are preserved.
+The official training and testing partitions are preserved throughout model development.
 
 ### Dataset
 
@@ -130,8 +145,9 @@ The official training and testing partitions are preserved.
 |---|---:|
 | Training | 175,341 |
 | Testing | 82,332 |
+| Total | 257,673 |
 
-The dataset contains numerical and categorical network traffic features.
+The dataset contains both numerical and categorical network traffic features.
 
 The following columns are excluded from the predictor set:
 
@@ -160,7 +176,7 @@ are encoded before model training.
 
 Mutual Information is used to rank encoded features.
 
-The selected-feature experiments use the top 60 features.
+The selected-feature experiments use the **top 60 features**.
 
 ### Hyperparameter Optimization
 
@@ -168,7 +184,7 @@ Optuna is used to optimize the strongest ensemble models.
 
 | Model | Best Validation F1 |
 |---|---:|
-| LightGBM | 0.9733 |
+| LightGBM | **0.9733** |
 | XGBoost | 0.9721 |
 | Random Forest | 0.9714 |
 
@@ -181,15 +197,15 @@ Optuna is used to optimize the strongest ensemble models.
 | Accuracy | 0.8696 |
 | Precision | 0.8196 |
 | Recall | 0.9787 |
-| F1-score | 0.8921 |
+| F1-score | **0.8921** |
 
-The final test result demonstrates strong attack detection while preserving the official benchmark test partition for final evaluation.
+The final evaluation demonstrates strong attack detection while preserving the official benchmark test partition until the final model-selection stage.
 
 ---
 
 # 3. CSE-CIC-IDS2018 Unsupervised Anomaly Detection
 
-The second medium-scale stage uses the CSE-CIC-IDS2018 `02-15-2018.csv` file.
+The next stage uses the **CSE-CIC-IDS2018 `02-15-2018.csv`** network traffic file.
 
 ### Raw Dataset
 
@@ -211,7 +227,7 @@ The experiments retain:
 - Benign traffic
 - DoS attacks-GoldenEye
 
-After filtering and exact duplicate removal:
+After class filtering and exact duplicate removal:
 
 - Benign: **994,414**
 - GoldenEye: **41,455**
@@ -242,15 +258,15 @@ The workflow includes:
 |---:|---:|---:|---:|---:|
 | 0.2% | 0.0856 | 1.0000 | 0.1577 | 0.0214 |
 | 1% | 0.3212 | 1.0000 | 0.4862 | 0.0213 |
-| 5% | 0.7136 | 1.0000 | 0.8329 | 0.0211 |
+| 5% | 0.7136 | 1.0000 | **0.8329** | 0.0211 |
 
-The Autoencoder provides the strongest overall performance among the unsupervised methods and is selected for the large-scale experiments.
+The Autoencoder provides the strongest overall performance among the evaluated unsupervised models and is selected for the large-scale experiments.
 
 ---
 
 # 4. Large-Scale Benign-Only Autoencoder
 
-The large-scale experiment evaluates whether additional benign training data improves reconstruction-based anomaly detection.
+The large-scale experiment evaluates the effect of increasing the amount of representative benign training data for reconstruction-based anomaly detection.
 
 ### Training Setup
 
@@ -263,7 +279,7 @@ Separate development and final evaluation pools are reserved before hyperparamet
 
 ### Final Holdout Sets
 
-Each final holdout contains 30,000 records.
+Each final holdout contains **30,000 records**.
 
 | Anomaly Rate | Benign | GoldenEye | Total |
 |---:|---:|---:|---:|
@@ -290,7 +306,7 @@ Optuna searches over:
 |---:|---:|---:|---:|---:|
 | 0.2% | 0.1460 | 1.0000 | 0.2548 | 0.0117 |
 | 1% | 0.4622 | 1.0000 | 0.6322 | 0.0118 |
-| 5% | 0.8171 | 0.9980 | 0.8986 | 0.0118 |
+| 5% | **0.8171** | **0.9980** | **0.8986** | 0.0118 |
 
 ### Mean Final F1
 
@@ -298,15 +314,15 @@ Optuna searches over:
 0.5952
 ```
 
-At 5% anomaly prevalence, the model achieves a strong balance between Precision and Recall.
+At 5% anomaly prevalence, the optimized Autoencoder achieves a strong balance between Precision and Recall.
 
 ---
 
 # 5. Training Contamination Analysis
 
-The final stage studies the effect of GoldenEye attack samples appearing in the Autoencoder training data.
+The final stage studies the effect of attack samples appearing in the Autoencoder training data.
 
-Three training conditions are evaluated while keeping the total training size fixed at 300,000 records.
+Three contamination levels are evaluated while keeping the total training size fixed at **300,000 observations**.
 
 | Training Contamination | Benign | GoldenEye | Total |
 |---:|---:|---:|---:|
@@ -318,39 +334,39 @@ Three training conditions are evaluated while keeping the total training size fi
 
 | Training Condition | Mean Final F1 | 5% Test Precision | 5% Test Recall | 5% Test F1 |
 |---|---:|---:|---:|---:|
-| Clean benign | 0.5952 | 0.8171 | 0.9980 | 0.8986 |
+| Clean benign | **0.5952** | **0.8171** | **0.9980** | **0.8986** |
 | 0.2% contamination | 0.2684 | 0.4900 | 0.5380 | 0.5129 |
 | 1% contamination | 0.0598 | 0.1891 | 0.0807 | 0.1131 |
 | 5% contamination | 0.0067 | 0.0235 | 0.0127 | 0.0165 |
 
 The results show that increasing training contamination substantially reduces the Autoencoder's ability to distinguish GoldenEye traffic from benign traffic.
 
-As attack samples become more frequent during training, their reconstruction behaviour becomes increasingly similar to the learned training distribution.
+As attack samples become more common in the training distribution, the Autoencoder increasingly learns to reconstruct them, reducing their reconstruction error and making them more difficult to identify as anomalies.
 
 ---
 
 # Key Findings
 
-- Supervised ensemble models perform strongly when representative attack labels are available.
+- Supervised ensemble models provide strong performance when representative attack labels are available.
 - LightGBM achieves an official UNSW-NB15 test F1-score of **0.8921**.
-- The Deep Autoencoder is the strongest unsupervised model evaluated on CSE-CIC-IDS2018.
-- Increasing the amount of representative benign training data improves large-scale Autoencoder performance.
+- The Deep Autoencoder provides the strongest unsupervised performance on the CSE-CIC-IDS2018 experiments.
+- Increasing representative benign training data improves large-scale Autoencoder performance.
 - The benign-only Autoencoder achieves **0.8986 F1-score** with **0.9980 Recall** on the final 5% anomaly holdout.
-- Training contamination has a strong negative effect on reconstruction-based anomaly detection.
-- Precision, Recall, F1-score, FPR, and FNR are more informative than Accuracy alone for highly imbalanced intrusion-detection problems.
+- Training contamination strongly degrades reconstruction-based anomaly detection.
+- Precision, Recall, F1-score, FPR, and FNR provide more useful evaluation than Accuracy alone under severe class imbalance.
 - Independent calibration and final holdout evaluation are important for reliable anomaly-detection experiments.
 
 ---
 
 # Methodology
 
-The project follows a structured evaluation pipeline designed to separate model development from final testing.
+The project follows a structured experimental design that separates model development from final evaluation.
 
-### Train-Test Separation
+## Train-Test Separation
 
 Train-test splitting is performed before learned preprocessing operations whenever applicable.
 
-### Training-Only Preprocessing
+## Training-Only Preprocessing
 
 Operations such as:
 
@@ -359,17 +375,17 @@ Operations such as:
 - Feature selection
 - Oversampling
 
-are learned using training data only.
+are learned from training data only.
 
-### Official Benchmark Split
+## Official Benchmark Split
 
 The official UNSW-NB15 training and testing partitions are preserved.
 
-### Threshold Calibration
+## Independent Threshold Calibration
 
-Autoencoder anomaly thresholds are calibrated using an independent benign reference set.
+Autoencoder anomaly thresholds are calibrated using independent benign reference data.
 
-### Development and Final Holdout Separation
+## Development and Final Holdout Separation
 
 Hyperparameter optimization is performed on dedicated development sets.
 
@@ -380,7 +396,7 @@ Final holdout samples are not used during:
 - Threshold calibration
 - Hyperparameter optimization
 
-### Evaluation Under Class Imbalance
+## Evaluation Under Class Imbalance
 
 The project reports:
 
@@ -391,7 +407,7 @@ The project reports:
 - False Positive Rate
 - False Negative Rate
 
-This provides a more complete assessment than Accuracy alone.
+This provides a more complete assessment of anomaly-detection performance than Accuracy alone.
 
 ---
 
@@ -431,6 +447,7 @@ This provides a more complete assessment than Accuracy alone.
 - Jupyter Notebook
 - Git
 - GitHub
+- Git LFS
 
 ---
 
@@ -452,24 +469,46 @@ Optuna       5.0.0
 
 # Installation
 
-Clone the repository:
+## 1. Install Git LFS
+
+Large dataset files are managed using **Git Large File Storage**.
+
+Install and initialize Git LFS before cloning:
 
 ```bash
-git clone <repository-url>
-cd Computer-Log-Anomaly-Detection
+git lfs install
 ```
 
-Create a virtual environment:
+## 2. Clone the Repository
+
+```bash
+git clone https://github.com/RajolKumar2003/Anomaly-Detection-in-Computer-Log-Using-ML-Techniques.git
+cd Anomaly-Detection-in-Computer-Log-Using-ML-Techniques
+```
+
+Git LFS automatically downloads the large dataset objects during cloning.
+
+If required, download the LFS objects manually using:
+
+```bash
+git lfs pull
+```
+
+## 3. Create a Virtual Environment
+
+On Windows:
 
 ```powershell
 py -3.12 -m venv .venv
 ```
 
-Activate the environment on Windows:
+Activate it:
 
 ```powershell
-.\\.venv\\Scripts\\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
+
+## 4. Install Dependencies
 
 Upgrade pip:
 
@@ -477,7 +516,7 @@ Upgrade pip:
 python -m pip install --upgrade pip
 ```
 
-Install dependencies:
+Install the project dependencies:
 
 ```powershell
 pip install -r requirements.txt
@@ -485,24 +524,26 @@ pip install -r requirements.txt
 
 ---
 
-# Dataset Setup
+# Dataset Structure
 
-Raw datasets are not included in the repository because of their size.
-
-Create the following local directory structure:
+The datasets used in the project are stored under the `data/` directory.
 
 ```text
 data/
+│
 ├── small/
 │   └── embedded_system_network_security_dataset.csv
 │
-└── medium/
-    ├── UNSW_NB15_training-set.csv
-    ├── UNSW_NB15_testing-set.csv
+├── medium/
+│   ├── UNSW_NB15_training-set.csv
+│   ├── UNSW_NB15_testing-set.csv
+│   └── 02-15-2018.csv
+│
+└── large/
     └── 02-15-2018.csv
 ```
 
-The notebooks expect the datasets at these locations.
+Large CSV files are managed through **Git LFS**.
 
 ---
 
@@ -526,17 +567,30 @@ Run the notebooks in the following order:
 5. Large_Dataset_Contamination.ipynb
 ```
 
+The notebooks are located inside:
+
+```text
+notebooks/
+```
+
 ---
 
 # Results
 
-Experiment outputs generated by the notebooks are stored in:
+Experiment outputs generated during model development are stored in:
 
 ```text
 results/
 ```
 
-The results directory contains model-comparison tables, final holdout metrics, feature-selection outputs, and hyperparameter summaries generated during the experiments.
+The directory contains outputs such as:
+
+- Model comparison results
+- Cross-validation results
+- Feature-selection results
+- Hyperparameter optimization summaries
+- Final holdout metrics
+- Contamination experiment results
 
 ---
 
@@ -548,25 +602,33 @@ The complete internship report is available at:
 docs/Project_Report.pdf
 ```
 
-The report contains the detailed methodology, experimental design, results, analysis, limitations, and future directions.
+The report contains the detailed methodology, experimental design, model comparisons, results, discussion, limitations, and future directions.
 
 ---
 
 # Project Conclusions
 
-The experiments show that supervised machine learning is highly effective when representative attack labels are available, while Deep Autoencoders provide a strong alternative for settings where anomaly detection must rely primarily on normal traffic.
+This project presents a systematic study of network anomaly detection across supervised, unsupervised, and deep-learning settings.
 
-The large-scale benign-only Autoencoder demonstrates strong GoldenEye attack detection, particularly at the 5% anomaly prevalence level.
+The experiments progress from a small labelled dataset to large-scale CSE-CIC-IDS2018 traffic and investigate not only predictive performance but also the effects of:
 
-The contamination study also reveals an important limitation of reconstruction-based anomaly detection: when malicious traffic becomes part of the training distribution, the Autoencoder increasingly learns to reconstruct attack behaviour, reducing its ability to identify that behaviour as anomalous.
+- Dataset scale
+- Class imbalance
+- Feature selection
+- Hyperparameter optimization
+- Threshold calibration
+- Anomaly prevalence
+- Training-data contamination
 
-This emphasizes the importance of:
+Supervised ensemble methods demonstrate strong performance when representative labelled attacks are available.
 
-- Representative benign training data
-- Independent threshold calibration
-- Careful train-test separation
-- Robust evaluation under class imbalance
-- Monitoring the quality of training data
+For unsupervised anomaly detection, the Deep Autoencoder provides the strongest overall performance in the CSE-CIC-IDS2018 experiments.
+
+The large-scale benign-only Autoencoder achieves an F1-score of **0.8986** and Recall of **0.9980** on the final 5% anomaly holdout.
+
+The contamination experiments reveal an important limitation of reconstruction-based anomaly detection: when attack behaviour becomes part of the training distribution, the Autoencoder increasingly learns to reconstruct it, substantially reducing detection performance.
+
+The results emphasize the importance of maintaining representative benign reference data, using independent threshold calibration, preserving strict train-test separation, and evaluating anomaly detectors with metrics appropriate for highly imbalanced data.
 
 ---
 
